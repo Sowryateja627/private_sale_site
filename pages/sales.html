@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Sale</title>
+    <link rel="stylesheet" href="../css/addsales.css"> <!-- Link to external CSS file -->
+</head>
+<body>
+    <header>
+        <h1>Private Sale Site</h1>
+    </header>
+
+    <div class="form-container">
+        <div class="card">
+            <h1>Add New Sale</h1>
+            <form action="../includes/addsale.php" method="post">
+                <label for="title">Sale Title:</label>
+                <input type="text" id="title" name="title" required>
+
+                <label for="description">Description:</label>
+                <textarea id="description" name="description" required></textarea>
+
+                <label for="start_date">Start Date:</label>
+                <input type="date" id="start_date" name="start_date" required>
+
+                <label for="end_date">End Date:</label>
+                <input type="date" id="end_date" name="end_date" required>
+
+                <button type="submit">Add Sale</button>
+            </form>
+            <a href="professional_dashboard.php" class="back-link">Back to Home</a>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-container">
+            <p>&copy; 2024 Private Sale Site. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

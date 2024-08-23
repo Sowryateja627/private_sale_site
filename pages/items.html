@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Items in Sale</title>
+    <link rel="stylesheet" href="../css/salesitems.css">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <h1>Items in Sale</h1>
+              <a id="dashboard-link" class="back-link">Back to Dashboard</a>
+
+        </div>
+    </header>
+
+    <main>
+        <section class="filter-section">
+            <form id="filter-form">
+                <label for="category">Category:</label>
+                <select id="category" name="category">
+                    <option value="">All Categories</option>
+                    <!-- Categories will be populated here -->
+                </select>
+
+                <label for="subcategory">Subcategory:</label>
+                <select id="subcategory" name="subcategory">
+                    <option value="">All Subcategories</option>
+                    <!-- Subcategories will be populated here -->
+                </select>
+
+                <input type="submit" value="Filter">
+            </form>
+        </section>
+
+        <section class="items-section">
+            <div id="item-list"></div>
+        </section>
+    </main>
+
+    <script >
+        document.addEventListener('DOMContentLoaded', () => {
+
+            
+            const categorySelect = document.getElementById('category');
+            const subcategorySelect = document.getElementById('subcategory');
+            const filterForm = document.getElementById('filter-form');
+            const itemList = document.getElementById('item-list');
+            const type = getQueryParam('type');
+            const saleId = getQueryParam('sale_id');
+
+            const dashboardUrl = type !== 'cus' ? 'professional_dashboard.php' : 'customer_dashboard.php';
+
+            const linkElement = document.getElementById('dashboard-link');
+            linkElement.href = dashboardUrl;
+
+            // Fetch and populate categories
+            fetch('../includes/fetchcategory.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.categories) {
+                        data.categories.forEach(category => {
+                            categorySelect.innerHTML += `<option value="${category.id}">${category.name}</option>`;
+                        });
+                    }
+                })
+                .catch(error => console.error('Error fetching categories:', error));
+
+            // Fetch and populate subcategories based on selected category
+            categorySelect.addEventListener('change', () => {
+                const categoryId = categorySelect.value;
+                subcategorySelect.innerHTML = '<option value="">All Subcategories</option>'; // Reset subcategories
+
+                if (categoryId) {
+                    fetch(`../includes/fetchsubcategories.php?category_id=${categoryId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.subcategories) {
+                                data.subcategories.forEach(subcategory => {
+                                    subcategorySelect.innerHTML += `<option value="${subcategory.id}">${subcategory.name}</option>`;
+                                });
+                            }
+                        })
+                        .catch(error => console.error('Error fetching subcategories:', error));
+                }
+            });
+
+            // Handle form submission
+            filterForm.addEventListener('submit', (event) => {
+                event.preventDefault();
+                const categoryId = categorySelect.value;
+                const subcategoryId = subcategorySelect.value;
+                displayItems(saleId, categoryId, subcategoryId);
+            });
+
+            // Display items based on filters
+            function displayItems(saleId, categoryId = '', subcategoryId = '') {
+
+
+                fetch(`../includes/fetch_items.php?sale_id=${saleId}&category_id=${categoryId}&subcategory_id=${subcategoryId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        itemList.innerHTML = '';
+
+                        if (data.items && data.items.length === 0) {
+                            itemList.innerHTML = '<p>No items available for this selection.</p>';
+                        } else {
+                            console.log(data);
+
+                            data.items.forEach(item => {
+                                itemList.innerHTML += `
+                                    <div class="item-card">
+                                        <h4>${item.brand}</h4>
+                                        <p><strong>Description:</strong> ${item.description}</p>
+                                        <p><strong>Category:</strong> ${item.category}</p>
+                                        <p><strong>Subcategory:</strong> ${item.subcategory}</p>
+                                        <p><strong>Size:</strong> ${item.size}</p>
+                                        <p><strong>Color:</strong> ${item.color}</p>
+                                        <p><strong>Stock Quantity:</strong> ${item.stock_quantity}</p>
+                                        ${item.photo ? `<img src="../uploads/${item.photo}" alt="${item.name}" class="item-photo">` : ''}
+                                        ${type === "cus" ? `
+                                            <form class="buy-form" data-item-id="${item.item_id}">
+                                                <label for="quantity-${item.item_id}">Quantity:</label>
+                                                <input type="number" id="quantity-${item.item_id}" name="quantity" min="1" max="${item.stock_quantity}" required>
+                                                <button type="submit">Buy</button>
+                                            </form>
+                                            <form class="preferences-form" data-item-id="${item.item_id}">
+                                                <button type="submit" class="add-to-preferences"
+                                                    data-item-id="${item.item_id}" 
+                                                    data-brand="${item.brand_id}" 
+                                                    data-description="${item.description}" 
+                                                    data-category="${item.category_id}"
+                                                    data-subcategory="${item.subcategory}"
+                                                    data-size="${item.size}" 
+                                                    data-color="${item.color}" 
+                                                    data-stock="${item.stock_quantity}">
+                                                    Add to Preferences
+                                                </button>
+                                            </form>
+                                        ` : `   <form class="alert-form" data-item-id="${item.item_id}">
+                                        <input type="hidden" name="brand_id" value="${item.brand_id}">
+                                        <textarea name="alert_message" placeholder="Enter alert message" required></textarea>
+                                        <button type="submit" class="send-alert">
+                                            Send Alert
+                                        </button>
+                                    </form>`
+                }
+                                    </div>
+                                `;
+                            });
+
+                            itemList.querySelectorAll('.alert-form').forEach(form => {
+                        form.addEventListener('submit', handleSendAlert);
+                    });
+
+                            // Add event listeners for dynamically added forms
+                            itemList.addEventListener('submit', function(event) {
+                                if (event.target && event.target.classList.contains('buy-form')) {
+                                    handleBuy(event);
+                                } else if (event.target && event.target.classList.contains('preferences-form')) {
+                                    handlePreference(event);
+                                }
+                            });
+                        }
+                    })
+                    .catch(error => console.error('Error fetching items:', error));
+            }
+
+            // Handle item purchase
+            function handleBuy(event) {
+                event.preventDefault();
+                const form = event.target;
+                const itemId = form.getAttribute('data-item-id');
+                const quantity = form.querySelector('input[name="quantity"]').value;
+
+                fetch('../includes/purchase_item.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: new URLSearchParams({
+                        item_id: itemId,
+                        quantity: quantity
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Purchase successful!');
+                        displayItems(saleId, categorySelect.value, subcategorySelect.value); // Refresh items
+                    } else {
+                        alert('Purchase failed: ' + data.message);
+                    }
+                })
+                .catch(error => console.error('Error purchasing item:', error));
+            }
+
+            // Handle adding to preferences
+            function handlePreference(event) {
+                event.preventDefault();
+                const form = event.target;
+                const button = form.querySelector('.add-to-preferences');
+
+                const itemId = button.getAttribute('data-item-id');
+                const brand = button.getAttribute('data-brand');
+                const description = button.getAttribute('data-description');
+                const category= button.getAttribute('data-category');
+                const subcategory = button.getAttribute('data-subcategory');
+                const size = button.getAttribute('data-size');
+                const color = button.getAttribute('data-color');
+                const stock = button.getAttribute('data-stock');
+
+                fetch('../includes/addpreference.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: new URLSearchParams({
+                        item_id: itemId,
+                        brand_id: brand,
+                        description: description,
+                        category_id: category,
+                        subcategory: subcategory,
+                        size: size,
+                        color: color,
+                        stock_quantity: stock
+                    })
+                })
+                .then(response => response.json())
+                .then(text => {
+                 alert("preference saved")
+                })
+                .catch(error => console.error('Error:', error));
+            }
+
+            
+            
+            function handleSendAlert(event) {
+        event.preventDefault();
+        const form = event.target.closest('form');
+        const brandId = form.querySelector('input[name="brand_id"]').value;
+        const alertMessage = form.querySelector('textarea[name="alert_message"]').value;
+
+        fetch('../includes/sendalert.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams({
+                brand_id: brandId,
+                alert_message: alertMessage
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Alert sent successfully!');
+            } else {
+                alert('Failed to send alert: ' + data.message);
+            }
+        })
+        .catch(error => console.error('Error sending alert:', error));
+    }    
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            // Fetch items on page load
+            if (saleId) {
+                displayItems(saleId);
+            } else {
+                itemList.innerHTML = '<p>No sale ID provided.</p>';
+            }
+
+            // Utility function to get query parameters
+            function getQueryParam(param) {
+                const urlParams = new URLSearchParams(window.location.search);
+                return urlParams.get(param);
+            }
+        });
+    </script>
+
+    <footer>
+        <div class="footer-container">
+            <p>&copy; 2024 Private Sale Site. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>
