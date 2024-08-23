@@ -1,0 +1,175 @@
+/* styles.css */
+
+/* General styles for the body */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+/* Header styles */
+header {
+    background-color: #333;
+    color: #fff;
+    padding: 10px 0;
+    text-align: center;
+}
+
+header a {
+    color: #fff;
+    text-decoration: none;
+    padding: 10px 20px;
+    display: inline-block;
+}
+
+header a:hover {
+    background-color: #575757;
+}
+
+/* Footer styles */
+footer {
+    background-color: #333;
+    color: #fff;
+    padding: 10px 0;
+    text-align: center;
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+}
+
+/* Main container styles */
+.dashboard-container {
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    overflow: auto;
+    overflow-x: hidden;
+}
+
+/* Dashboard heading styles */
+.dashboard-container h1 {
+    font-size: 24px;
+    color: #333;
+}
+
+/* Dashboard actions styles */
+.dashboard-actions {
+    margin-top: 20px;
+}
+
+.dashboard-button {
+    display: inline-block;
+    padding: 10px 20px;
+    margin: 5px;
+    font-size: 16px;
+    text-align: center;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 4px;
+    text-decoration: none;
+}
+
+.dashboard-button:hover {
+    background-color: #0056b3;
+}
+
+/* Logout button styles */
+.logout-button {
+    display: inline-block;
+    padding: 10px 20px;
+    margin-top: 20px;
+    font-size: 16px;
+    text-align: center;
+    color: #fff;
+    background-color: #dc3545;
+    border: none;
+    border-radius: 4px;
+    text-decoration: none;
+}
+
+.logout-button:hover {
+    background-color: #c82333;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+table, th, td {
+    border: 1px solid black;
+}
+th, td {
+    padding: 8px;
+    text-align: left;
+}
+th {
+    background-color: #f2f2f2;
+}
+
+#result-table th, #result-table td {
+    padding: 10px; /* Adjust this value to control space */
+}
+#result-table tr {
+    margin-bottom: 10px; /* Space between rows */
+}
+
+#result-table {
+    border-collapse: separate; /* Ensure borders do not collapse into each other */
+    border-spacing: 0; /* Add space between columns */
+}
+
+
+/* Style for the form container */
+form {
+    max-width: 600px; /* Set a maximum width for the form */
+    margin: 20px auto; /* Center the form horizontally with auto margins */
+    padding: 20px; /* Add padding inside the form */
+    border: 1px solid #ddd; /* Light gray border around the form */
+    border-radius: 8px; /* Rounded corners for the form */
+    background-color: #f9f9f9; /* Light background color */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow effect */
+}
+
+/* Style for the label */
+form label {
+    display: block; /* Ensure the label takes up the full width */
+    margin-bottom: 8px; /* Space between the label and the select */
+    font-weight: bold; /* Bold text for the label */
+    font-size: 16px; /* Slightly larger font size for readability */
+}
+
+/* Style for the select element */
+form select {
+    width: 100%; /* Full width to fill the container */
+    padding: 10px; /* Padding inside the select */
+    border: 1px solid #ccc; /* Light gray border */
+    border-radius: 4px; /* Rounded corners for the select */
+    font-size: 16px; /* Font size for the select */
+    box-sizing: border-box; /* Include padding and border in the element’s total width and height */
+}
+
+/* Style for the submit button */
+form button {
+    display: inline-block; /* Inline block to maintain spacing */
+    padding: 10px 20px; /* Padding inside the button */
+    margin-top: 10px; /* Space between the select and the button */
+    font-size: 16px; /* Font size for the button text */
+    color: #fff; /* Text color */
+    background-color: #007bff; /* Button background color */
+    border: none; /* Remove default border */
+    border-radius: 4px; /* Rounded corners for the button */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s; /* Smooth transition for background color */
+}
+
+/* Style the submit button on hover */
+form button:hover {
+    background-color: #0056b3; /* Darker background color on hover */
+}
+
